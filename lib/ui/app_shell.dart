@@ -55,7 +55,9 @@ class _AppShellState extends State<AppShell> {
   }
 
   /// 统一的滚动处理：页面下滑时收起顶栏，上滑或回到顶部时展开。
+  /// 电视模式（遥控器）下始终保留顶栏导航，不做折叠。
   bool _onScrollNotification(ScrollNotification notification) {
+    if (TvMode.of(context).isTv) return false;
     if (notification.metrics.axis != Axis.vertical) return false;
     final current = notification.metrics.pixels;
     final delta = current - _scrollPixels;
@@ -81,6 +83,7 @@ class _AppShellState extends State<AppShell> {
       animation: Listenable.merge([store, mediaStore]),
       builder: (context, _) {
         final page = _pageFor(context, store, mediaStore, _index);
+        final tv = TvMode.of(context).isTv;
         return Scaffold(
           backgroundColor: Colors.transparent,
           body: MoonBackdrop(
@@ -90,7 +93,7 @@ class _AppShellState extends State<AppShell> {
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOutCubic,
                   alignment: Alignment.topCenter,
-                  child: _barHidden
+                  child: _barHidden && !tv
                       ? const SizedBox(width: double.infinity, height: 0)
                       : _TopBar(width: width, index: _index, onSelect: _select),
                 ),

@@ -29,6 +29,8 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   late int _index;
+  bool _barHidden = false;
+  double _scrollPixels = 0;
 
   @override
   void initState() {
@@ -46,7 +48,27 @@ class _AppShellState extends State<AppShell> {
   void _select(int index) {
     FocusManager.instance.primaryFocus?.unfocus();
     if (_index == index) return;
-    setState(() => _index = index);
+    setState(() {
+      _index = index;
+      _barHidden = false;
+    });
+  }
+
+  /// 统一的滚动处理：页面下滑时收起顶栏，上滑或回到顶部时展开。
+  bool _onScrollNotification(ScrollNotification notification) {
+    if (notification.metrics.axis != Axis.vertical) return false;
+    final current = notification.metrics.pixels;
+    final delta = current - _scrollPixels;
+    _scrollPixels = current;
+    if (notification is ScrollUpdateNotification ||
+        notification is OverscrollNotification) {
+      if (delta > 8 && !_barHidden) {
+        setState(() => _barHidden = true);
+      } else if ((delta < -8 || current <= 4) && _barHidden) {
+        setState(() => _barHidden = false);
+      }
+    }
+    return false;
   }
 
   @override
@@ -64,8 +86,20 @@ class _AppShellState extends State<AppShell> {
           body: MoonBackdrop(
             child: Column(
               children: [
-                _TopBar(width: width, index: _index, onSelect: _select),
-                Expanded(child: SafeArea(top: false, child: page)),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  alignment: Alignment.topCenter,
+                  child: _barHidden
+                      ? const SizedBox(width: double.infinity, height: 0)
+                      : _TopBar(width: width, index: _index, onSelect: _select),
+                ),
+                Expanded(
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: _onScrollNotification,
+                    child: SafeArea(top: false, child: page),
+                  ),
+                ),
               ],
             ),
           ),

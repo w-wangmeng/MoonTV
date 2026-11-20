@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FileProvider 可见路径：仅暴露应用内部分类下载目录，避免暴露整个存储 -->
+<paths>
+    <files-path name="downloads" path="downloads/" />
+</paths>

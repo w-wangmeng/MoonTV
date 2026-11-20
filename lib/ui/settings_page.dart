@@ -5,6 +5,8 @@ import '../media/media_models.dart';
 import '../media/media_store.dart';
 import '../store/app_store.dart';
 import '../tv_mode.dart';
+import '../update/update_dialog.dart';
+import '../update/update_service.dart';
 import 'sources_page.dart';
 import 'theme.dart';
 import 'tv_focus.dart';
@@ -129,7 +131,15 @@ class SettingsPage extends StatelessWidget {
                 icon: Icons.nightlight_outlined,
                 title: 'MoonTV',
                 subtitle: '基于 Moonfin-Core 的界面与交互重构 · GPL-3.0',
-                trailing: 'v1.4.0',
+                trailing: 'v$kAppVersion',
+              ),
+              const SizedBox(height: 9),
+              _SettingTile(
+                icon: Icons.system_update_alt_rounded,
+                title: '检查更新',
+                subtitle: '从 GitHub 检查并下载新版本，完成后自动打开安装器',
+                trailing: 'v$kAppVersion',
+                onTap: () => checkForUpdates(context),
               ),
               const SizedBox(height: 9),
               _SettingTile(
@@ -139,7 +149,7 @@ class SettingsPage extends StatelessWidget {
                 onTap: () => showLicensePage(
                   context: context,
                   applicationName: 'MoonTV',
-                  applicationVersion: '1.4.0',
+                  applicationVersion: kAppVersion,
                 ),
               ),
               const SizedBox(height: 9),

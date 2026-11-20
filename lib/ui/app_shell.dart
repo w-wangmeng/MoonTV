@@ -7,6 +7,7 @@ import '../media/media_store.dart';
 import '../models.dart';
 import '../store/app_store.dart';
 import '../tv_mode.dart';
+import '../update/update_dialog.dart';
 import 'discover_page.dart';
 import 'favorites_page.dart';
 import 'library_page.dart';
@@ -33,6 +34,13 @@ class _AppShellState extends State<AppShell> {
   void initState() {
     super.initState();
     _index = widget.mediaStore.hasServer ? 0 : (widget.store.hasConfig ? 1 : 0);
+    // 启动后稍作延迟静默检查更新；入口页渲染完成后再弹窗。
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future<void>.delayed(const Duration(seconds: 2), () {
+        if (!mounted) return;
+        unawaited(maybePromptUpdate(context));
+      });
+    });
   }
 
   void _select(int index) {

@@ -67,6 +67,11 @@ android {
     }
 }
 
+dependencies {
+    // FileProvider 用于在线更新安装；Flutter 嵌入层已传递引入，这里显式声明以确保可用。
+    implementation("androidx.core:core-ktx:1.13.1")
+}
+
 kotlin {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17

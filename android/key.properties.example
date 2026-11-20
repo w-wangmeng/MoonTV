@@ -1,0 +1,5 @@
+# Copy this file to android/key.properties before building a release APK.
+storePassword=your-store-password
+keyPassword=your-key-password
+keyAlias=your-key-alias
+storeFile=C:/path/to/your-release.jks

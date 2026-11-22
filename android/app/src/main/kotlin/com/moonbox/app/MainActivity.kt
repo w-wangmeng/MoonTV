@@ -1,9 +1,11 @@
 package com.moonbox.app
 
 import android.app.UiModeManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -17,10 +19,24 @@ class MainActivity : FlutterActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             "moonbox/device",
         ).setMethodCallHandler { call, result ->
-            if (call.method == "isTelevision") {
-                result.success(isTelevision())
-            } else {
-                result.notImplemented()
+            when (call.method) {
+                "isTelevision" -> {
+                    result.success(isTelevision())
+                }
+                // Flutter's engine asks Android for the soft keyboard when a
+                // text field gets focus, but on Android TV that request is
+                // usually dropped. This forces the currently focused view's
+                // input connection to show the IME, so Sogou TV keyboard etc.
+                // actually appears.
+                "showKeyboard" -> {
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE)
+                        as InputMethodManager
+                    val target = currentFocus ?: window.decorView
+                    result.success(
+                        imm.showSoftInput(target, InputMethodManager.SHOW_FORCED),
+                    )
+                }
+                else -> result.notImplemented()
             }
         }
         MethodChannel(

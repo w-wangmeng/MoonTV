@@ -11,6 +11,7 @@ import 'store/app_store.dart';
 import 'tv_mode.dart';
 import 'ui/app_shell.dart';
 import 'ui/theme.dart';
+import 'ui/tv_keyboard.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,16 +48,19 @@ class MoonTVApp extends StatelessWidget {
     return AnimatedBuilder(
       animation: tvMode,
       builder: (context, _) {
-        return MaterialApp(
-          title: 'MoonTV',
-          debugShowCheckedModeBanner: false,
-          theme: buildMoonTheme(tv: tvMode.isTv),
-          themeMode: ThemeMode.dark,
-          builder: (context, child) => TvModeScope(
-            controller: tvMode,
-            child: child ?? const SizedBox.shrink(),
+        return TvKeyboardListener(
+          controller: tvMode,
+          child: MaterialApp(
+            title: 'MoonTV',
+            debugShowCheckedModeBanner: false,
+            theme: buildMoonTheme(tv: tvMode.isTv),
+            themeMode: ThemeMode.dark,
+            builder: (context, child) => TvModeScope(
+              controller: tvMode,
+              child: child ?? const SizedBox.shrink(),
+            ),
+            home: _RootGate(store: store, mediaStore: mediaStore),
           ),
-          home: _RootGate(store: store, mediaStore: mediaStore),
         );
       },
     );
